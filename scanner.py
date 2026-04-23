@@ -1,5 +1,5 @@
 import pandas as pd
-import pandas_ta as ta
+import ta
 import yfinance as yf
 
 NSE_STOCKS = ["RELIANCE.NS", "TCS.NS", "INFY.NS"]
@@ -8,8 +8,8 @@ def get_data(symbol):
     return yf.download(symbol, period="3mo", interval="1d")
 
 def analyze_stock(df, trade_type):
-    df['ema20'] = ta.ema(df['Close'], length=20)
-    df['ema50'] = ta.ema(df['Close'], length=50)
+    df['ema20'] = ta.trend.ema_indicator(df['Close'], window=20)
+    df['ema50'] = ta.trend.ema_indicator(df['Close'], window=50)
 
     latest = df.iloc[-1]
 
