@@ -13,24 +13,21 @@ def analyze_stock(df, trade_type):
 
     latest = df.iloc[-1]
 
-    if trade_type == "Swing" and latest['ema20'] > latest['ema50']:
-        return "BUY", 0.7, latest['Close']
+    ema20 = float(latest['ema20'])
+    ema50 = float(latest['ema50'])
+    price = float(latest['Close'])
 
-    return None, 0, latest['Close']
+    signal = None
+    confidence = 0
 
-def scan_market(trade_type):
-    results = []
+    if trade_type == "Swing":
+        if ema20 > ema50:
+            signal = "BUY"
+            confidence = 0.7
 
-    for stock in NSE_STOCKS:
-        df = get_data(stock)
-        signal, confidence, price = analyze_stock(df, trade_type)
+    if trade_type == "Intraday":
+        if price > df['High'].rolling(10).max().iloc[-2]:
+            signal = "BREAKOUT BUY"
+            confidence = 0.8
 
-        if signal:
-            results.append({
-                "stock": stock,
-                "signal": signal,
-                "price": price,
-                "confidence": confidence
-            })
-
-    return results
+    return signal, confidence, price
